@@ -8,25 +8,49 @@ import Login from '../screens/Login';
 import Register from '../screens/Register';
 import Home from '../screens/Home';
 import Details from '../screens/Details';
+import BookDetails from '../screens/BookDetails';
+import AddAssignment from '../screens/AddAssignment';
 import Favorites from '../screens/Favorites';
 import Profile from '../screens/Profile';
 import { useTheme as usePaperTheme } from 'react-native-paper';
+import { Platform } from 'react-native';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function MainTabs() {
+function MainTabs({ isDarkMode, toggleTheme }) {
   const paperTheme = usePaperTheme();
   return (
-    <Tab.Navigator screenOptions={{ tabBarActiveTintColor: paperTheme.colors.primary, tabBarStyle: { backgroundColor: paperTheme.colors.background } }}>
-      <Tab.Screen name="Home" component={Home} options={{ tabBarIcon: ({ color }) => <Feather name="home" size={24} color={color} /> }} />
-      <Tab.Screen name="Favorites" component={Favorites} options={{ tabBarIcon: ({ color }) => <Feather name="heart" size={24} color={color} /> }} />
-      <Tab.Screen name="Profile" component={Profile} options={{ tabBarIcon: ({ color }) => <Feather name="user" size={24} color={color} /> }} />
+    <Tab.Navigator 
+      screenOptions={{ 
+        tabBarActiveTintColor: paperTheme.colors.primary, 
+        tabBarStyle: { backgroundColor: paperTheme.colors.background },
+        headerShown: false,
+      }}
+    >
+      <Tab.Screen 
+        name="Home" 
+        options={{ tabBarIcon: ({ color }) => <Feather name="home" size={24} color={color} /> }}
+      >
+        {(props) => <Home {...props} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}
+      </Tab.Screen>
+      <Tab.Screen 
+        name="Favorites" 
+        options={{ tabBarIcon: ({ color }) => <Feather name="heart" size={24} color={color} /> }}
+      >
+        {(props) => <Favorites {...props} isDarkMode={isDarkMode} />}
+      </Tab.Screen>
+      <Tab.Screen 
+        name="Profile" 
+        options={{ tabBarIcon: ({ color }) => <Feather name="user" size={24} color={color} /> }}
+      >
+        {(props) => <Profile {...props} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
-export default function Navigation({ isDarkMode }) {
+export default function Navigation({ isDarkMode, toggleTheme }) {
   const { token, user } = useSelector(state => state.auth);
   const paperTheme = usePaperTheme();
 
@@ -48,14 +72,55 @@ export default function Navigation({ isDarkMode }) {
   return (
     <NavigationContainer theme={navigationTheme}>
       {token ? (
-        <Stack.Navigator>
-          <Stack.Screen name="Main" component={MainTabs} options={{ headerTitle: `Welcome, ${user?.email || 'User'}`, headerTintColor: paperTheme.colors.text, headerStyle: { backgroundColor: paperTheme.colors.background } }} />
-          <Stack.Screen name="Details" component={Details} options={{ headerTintColor: paperTheme.colors.text, headerStyle: { backgroundColor: paperTheme.colors.background } }} />
+        <Stack.Navigator
+          screenOptions={{
+            headerTintColor: paperTheme.colors.onSurface,
+            headerStyle: { 
+              backgroundColor: paperTheme.colors.surface,
+            },
+            headerTitleStyle: {
+              fontWeight: Platform.OS === 'web' ? '600' : 'bold',
+            },
+          }}
+        >
+          <Stack.Screen 
+            name="Main" 
+            options={{ 
+              headerTitle: `Welcome, ${user?.name || user?.username || user?.email || 'User'}`,
+            }}
+          >
+            {(props) => <MainTabs {...props} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}
+          </Stack.Screen>
+          <Stack.Screen 
+            name="Details" 
+            component={Details} 
+            options={{ title: 'Assignment Details' }}
+          />
+          <Stack.Screen 
+            name="BookDetails" 
+            component={BookDetails} 
+            options={{ title: 'Book Details' }}
+          />
+          <Stack.Screen 
+            name="AddAssignment" 
+            component={AddAssignment} 
+            options={{ title: 'New Assignment' }}
+          />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={Login} options={{ headerTintColor: paperTheme.colors.text, headerStyle: { backgroundColor: paperTheme.colors.background } }} />
-          <Stack.Screen name="Register" component={Register} options={{ headerTintColor: paperTheme.colors.text, headerStyle: { backgroundColor: paperTheme.colors.background } }} />
+        <Stack.Navigator
+          screenOptions={{
+            headerTintColor: paperTheme.colors.onSurface,
+            headerStyle: { 
+              backgroundColor: paperTheme.colors.surface,
+            },
+            headerTitleStyle: {
+              fontWeight: Platform.OS === 'web' ? '600' : 'bold',
+            },
+          }}
+        >
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Register} />
         </Stack.Navigator>
       )}
     </NavigationContainer>

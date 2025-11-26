@@ -6,9 +6,10 @@ import { View, Text, Platform, ScrollView } from 'react-native';
 import { Button, TextInput, useTheme, Card, Paragraph, Snackbar } from 'react-native-paper';
 
 const RegisterSchema = Yup.object().shape({
+  name: Yup.string().min(2, 'Too Short!').required('Required'),
+  username: Yup.string().min(3, 'Too Short!').required('Required'),
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().min(6, 'Too Short!').required('Required'),
-  username: Yup.string().min(3, 'Too Short!').required('Required'),
 });
 
 export default function Register({ navigation }) {
@@ -58,18 +59,33 @@ export default function Register({ navigation }) {
             <Card.Content>
               <Paragraph>
                 <Text style={{ fontWeight: 'bold' }}>Create your account{'\n'}</Text>
-                Enter any email and password to register.
+                Enter your email and password to register.
               </Paragraph>
             </Card.Content>
           </Card>
 
           <Formik 
-            initialValues={{ username: '', email: '', password: '' }} 
+            initialValues={{ name: '', username: '', email: '', password: '' }} 
             validationSchema={RegisterSchema} 
             onSubmit={handleRegister}
           >
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
               <>
+                <TextInput 
+                  label="Full Name" 
+                  mode="outlined" 
+                  onChangeText={handleChange('name')} 
+                  onBlur={handleBlur('name')} 
+                  value={values.name} 
+                  error={touched.name && errors.name}
+                  autoCapitalize="words"
+                />
+                {touched.name && errors.name && (
+                  <Text style={{ color: theme.colors.error, marginTop: 5, marginBottom: 10 }}>
+                    {errors.name}
+                  </Text>
+                )}
+
                 <TextInput 
                   label="Username" 
                   mode="outlined" 
@@ -78,6 +94,7 @@ export default function Register({ navigation }) {
                   value={values.username} 
                   error={touched.username && errors.username}
                   autoCapitalize="none"
+                  style={{ marginTop: 10 }}
                 />
                 {touched.username && errors.username && (
                   <Text style={{ color: theme.colors.error, marginTop: 5, marginBottom: 10 }}>

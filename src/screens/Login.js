@@ -54,7 +54,7 @@ export default function Login({ navigation }) {
             <Card.Content>
               <Paragraph>
                 <Text style={{ fontWeight: 'bold' }}>Welcome Back!{'\n'}</Text>
-                Login with any email and password.
+                
               </Paragraph>
             </Card.Content>
           </Card>
